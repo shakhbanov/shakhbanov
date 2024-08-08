@@ -1,5 +1,3 @@
-### README.md на русском языке
-
 <p align="center">
   <img src="https://s3.shakhbanov.org/logo.jpeg" alt="Лого" width="200" />
 </p>
@@ -37,50 +35,41 @@ data = pd.read_csv('timeseries.csv')
 
 ```python
 # Инициализация KalmanGapFiller с параметрами
-kgf = KalmanGapFiller()
-kalman_gap_filler.init(
-    date_column='date',
-    group_column='group',
-    target_columns=['value'],
-    tqdm=True,  # Включить индикатор прогресса tqdm
-    parallel=True  # Включить параллельную обработку
-)
-
-# Обработка данных
-data = kgf.process(df)
+data = KalmanGapFiller( 
+                        date_column='ds',                   # Колонка с датами
+                        group_column='id',                  # Колонка с идентификаторами групп
+                        target_columns=['value', 'value2'], # Колонки с целевыми значениями 
+                        tqdm=True,                          # Показ прогресса выполнения
+                        parallel=True                       # Использование параллельной обработки
+                    ).process(data)                         # Обработка данных
 ```
 
 ### 🧹 Очищаем данные от выбросов с учетом тренда
 
 ```python
-dc = DataCleaner(
-    method='mean',  # Метод расчета центральной тенденции ('mean', 'median' или 'mode')
-    weeks=4,  # Количество недель для расчета скользящего среднего
-    window=365,  # Размер окна для скользящего среднего и стандартного отклонения
-    std=2,  # Количество стандартных отклонений для определения выбросов
-    tqdm=True,  # Флаг для использования индикатора прогресса tqdm
-    plot=True,  # Флаг для включения или отключения визуализации
-    num_plot=5,  # Количество объектов для визуализации
-    parallel=True  # Флаг для использования параллельной обработки
-)
-
-# Очистка данных
-data = dc.clean_data(data=df, column='value', series_id='series_id')
+data = DataCleaner(method='mean',      # Метод расчета центральной тенденции ('mean', 'median' или 'mode')
+                   weeks=4,            # Количество недель для расчета скользящего среднего
+                   window=365,         # Размер окна для скользящего среднего и стандартного отклонения
+                   std=2,              # Количество стандартных отклонений для определения выбросов
+                   tqdm=True,          # Флаг для использования индикатора прогресса tqdm
+                   plot=False,         # Флаг для включения или отключения визуализации
+                   num_plot=5,         # Количество объектов для визуализации
+                   parallel=True).clean_data(data=data, column=['value', 'value2'], series_id='id')
 ```
 
 ### 📈 Прогнозирование
 
 ```python
 bk = BurgerKing(
-    df=data,  # Набор данных
-    freq='D',  # Частота временного ряда
-    periods=180,  # Количество периодов для прогнозирования
-    target=['check_qnty', 'avg'],  # Целевые переменные для прогнозирования
-    levels=['W', 'M'],  # Уровни для ресемплинга ('W' - еженедельно, 'M' - ежемесячно)
-    agg_fn=['mean', 'median'],  # Функции агрегации
-    n_splits=5,  # Количество разбиений для TimeSeriesSplit
-    n_estimators=350,  # Количество итераций для бустинга в LightGBM
-    early_stopping_rounds=150,  # Количество раундов для ранней остановки в LightGBM
+    data=data,                       # Набор данных
+    freq='D',                        # Частота временного ряда
+    periods=180,                     # Количество периодов для прогнозирования
+    target=['check_qnty', 'avg'],    # Целевые переменные для прогнозирования
+    levels=['W', 'M'],               # Уровни для ресемплинга ('W' - еженедельно, 'M' - ежемесячно)
+    agg=['mean', 'median'],          # Функции агрегации
+    n_splits=5,                      # Количество разбиений для TimeSeriesSplit
+    n_estimators=350,                # Количество итераций для бустинга в LightGBM
+    early_stopping_rounds=150,       # Количество раундов для ранней остановки в LightGBM
     lgb_params={
         'objective': 'regression',
         'metric': 'mse',
@@ -93,8 +82,8 @@ bk = BurgerKing(
         'weekly_seasonality': True,
         'daily_seasonality': False
     },  # Параметры для Prophet
-    holidays_getter=None,  # Кастомный получатель праздников
-    tqdm_enabled=True  # Включить индикаторы прогресса tqdm
+    holidays_getter=None,             # Кастомный получатель праздников
+    tqdm=True                         # Включить индикаторы прогресса tqdm
 )
 
 results_df = bk.run()
@@ -149,50 +138,41 @@ data = pd.read_csv('timeseries.csv')
 
 ```python
 # Initialize KalmanGapFiller with parameters
-kgf = KalmanGapFiller()
-kalman_gap_filler.init(
-    date_column='date',
-    group_column='group',
-    target_columns=['value'],
-    tqdm=True,  # Enable tqdm progress bar
-    parallel=True  # Enable parallel processing
-)
-
-# Process the data
-data = kgf.process(df)
+data = KalmanGapFiller(date_column='ds',
+                      group_column='id', 
+                      target_columns=['value', 'value2'],
+                      tqdm=True, 
+                      parallel=True).process(data)
 ```
 
 ### 🧹 Clean Data from Outliers Considering Trend
 
 ```python
-dc = DataCleaner(
-    method='mean',  # Method to calculate central tendency ('mean', 'median', or 'mode')
-    weeks=4,  # Number of weeks to consider for rolling mean calculation
-    window=365,  # Window size for moving average and standard deviation
-    std=2,  # Number of standard deviations to determine outliers
-    tqdm=True,  # Flag to use tqdm progress bar
-    plot=True,  # Flag to enable or disable visualization
-    num_plot=5,  # Number of objects to visualize
-    parallel=True  # Flag to use parallel processing
-)
+data = DataCleaner(method='mean',      # Method for calculating central tendency ('mean', 'median' or 'mode')
+                   weeks=4,            # Number of weeks for calculating the moving average
+                   window=365,         # Window size for moving average and standard deviation
+                   std=2,              # Number of standard deviations for identifying outliers
+                   tqdm=True,          # Flag to use tqdm progress indicator
+                   plot=False,         # Flag to enable or disable visualization
+                   num_plot=5,         # Number of items to visualize
+                   parallel=True       # Flag to use parallel processing
+                ).clean_data(data=data, column=['value', 'value2'], series_id='id')
 
-# Clean the data
-data = dc.clean_data(data=df, column='value', series_id='series_id')
 ```
 
 ### 📈 Forecasting
 
 ```python
 bk = BurgerKing(
-    df=data,  # Dataset
-    freq='D',  # Frequency of the time series data
-    periods=180,  # Number of periods to forecast
-    target=['check_qnty', 'avg'],  # Target variables to forecast
-    levels=['W', 'M'],  # Levels for resampling ('W' for weekly, 'M' for monthly)
-    agg_fn=['mean', 'median'],  # Aggregation functions
-    n_splits=5,  # Number of splits for TimeSeriesSplit
-    n_estimators=350,  # Number of boosting iterations for LightGBM
-    early_stopping_rounds=150,  # Rounds of early stopping for LightGBM
+    data=data,                      # Dataset
+    freq='D',                       # Frequency of the time series data
+    periods=180,                    # Number of periods to forecast
+    target=['check_qnty', 'avg'],   # Target variables to forecast
+    levels=['W', 'M'],              # Levels for resampling ('W' for weekly, 'M' for monthly)
+    agg=['mean', 'median'],         # Aggregation functions
+    n_splits=5,                     # Number of splits for TimeSeriesSplit
+    n_estimators=350,               # Number of boosting iterations for LightGBM
+    early_stopping_rounds=150,      # Rounds of early stopping for LightGBM
     lgb_params={
         'objective': 'regression',
         'metric': 'mse',
@@ -205,8 +185,8 @@ bk = BurgerKing(
         'weekly_seasonality': True,
         'daily_seasonality': False
     },  # Parameters for Prophet
-    holidays_getter=None,  # Custom holidays getter
-    tqdm_enabled=True  # Enable tqdm progress bars
+    holidays_getter=None,           # Custom holidays getter
+    tqdm=True                       # Enable tqdm progress bars
 )
 
 results_df = bk.run()
