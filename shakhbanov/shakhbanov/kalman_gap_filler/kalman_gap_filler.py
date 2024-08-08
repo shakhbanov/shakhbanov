@@ -7,7 +7,7 @@ from pykalman import KalmanFilter
 from joblib import Parallel, delayed
 
 class KalmanGapFiller:
-    def init(self, date_column: str, group_column: str, target_columns: List[str], tqdm: bool = True, parallel: bool = True):
+    def __init__(self, date_column: str, group_column: str, target_columns: List[str], tqdm: bool = True, parallel: bool = True):
         """
         Initialize the KalmanGapFiller.
 
