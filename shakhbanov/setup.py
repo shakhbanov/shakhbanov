@@ -30,7 +30,7 @@ setup(
         'prophet',
         'lightgbm',
         'holidays',
-        'sklearn',
+        'scikit-learn',
         'pykalman',
     ],
 )
