@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='shakhbanov_ml',
-    version='0.1.0',
+    version='0.2.0',
     author='Zurab Shakhbanov',
     author_email='zurab@shakhbanov.ru',
     description='ML tools for time series',
